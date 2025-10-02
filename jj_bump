@@ -7,9 +7,7 @@ if ! command -v jj &> /dev/null; then
     exit 1
 fi
 
-current_commit=$(jj log -r @ --no-graph -T 'commit_id')
-
-bookmarks=$(jj log -r "$current_commit~" --no-graph -T 'bookmarks' | tr ' ' '\n' | grep -v '^$')
+bookmarks=$(jj log -r '::@-' --no-graph -T 'bookmarks' | tr ' ' '\n' | grep -v '^$' || true)
 
 if [ -z "$bookmarks" ]; then
     echo "Error: No bookmarks found on the previous commit." >&2
@@ -18,7 +16,7 @@ fi
 
 latest_bookmark=$(echo "$bookmarks" | head -n 1)
 
-last_non_empty=$(jj log -r "@ & ~empty()" --no-graph -T 'commit_id' | head -n 1)
+last_non_empty=$(jj log -r "::@ & ~empty()" --no-graph -T 'commit_id ++ "\n"' | head -n 1)
 
 if [ -z "$last_non_empty" ]; then
     echo "Error: No non-empty revision found in current commit lineage." >&2
@@ -27,5 +25,3 @@ fi
 
 echo "Moving bookmark '$latest_bookmark' to commit $last_non_empty"
 jj bookmark set "$latest_bookmark" -r "$last_non_empty"
-
-echo "Done!"
