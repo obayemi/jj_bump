@@ -7,10 +7,10 @@ if ! command -v jj &> /dev/null; then
     exit 1
 fi
 
-bookmarks=$(jj log -r '::@-' --no-graph -T 'bookmarks' | tr ' ' '\n' | grep -v '^$' || true)
+bookmarks=$(jj log -r '::@-' --no-graph -T 'bookmarks' | tr ' ' '\n' | grep -v '^$' | grep -v '@' || true)
 
 if [ -z "$bookmarks" ]; then
-    echo "Error: No bookmarks found on the previous commit." >&2
+    echo "Error: No local bookmarks found on the previous commit." >&2
     exit 1
 fi
 

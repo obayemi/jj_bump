@@ -67,7 +67,7 @@ test_no_bookmarks() {
     jj new > /dev/null 2>&1
     jj describe -m "another commit" > /dev/null 2>&1
     
-    if "$JJ_BUMP" 2>&1 | grep -q "No bookmarks found"; then
+    if "$JJ_BUMP" 2>&1 | grep -q "No local bookmarks found"; then
         pass "No bookmarks error"
     else
         fail "No bookmarks error"
@@ -157,12 +157,34 @@ test_jj_not_installed() {
 echo "Running jj_bump tests..."
 echo
 
+test_remote_bookmarks() {
+    echo "Test: Remote bookmarks are ignored"
+    setup_test_repo
+    
+    echo "content" > file.txt
+    jj describe -m "add file" > /dev/null 2>&1
+    
+    jj bookmark create test-bookmark > /dev/null 2>&1
+    jj bookmark create "test-bookmark@origin" > /dev/null 2>&1 || true
+    
+    jj new > /dev/null 2>&1
+    jj describe -m "empty commit" > /dev/null 2>&1
+    
+    if "$JJ_BUMP" 2>&1 | grep -q "test-bookmark@origin"; then
+        fail "Remote bookmarks - should not try to move remote bookmarks"
+    else
+        pass "Remote bookmarks - correctly ignored"
+    fi
+    return 0
+}
+
 test_jj_not_installed
 test_basic_bump
 test_no_bookmarks
 test_multiple_bookmarks
 test_multiple_empty_commits
 test_no_non_empty_revision
+test_remote_bookmarks
 
 echo
 echo "========================================"
