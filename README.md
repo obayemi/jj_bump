@@ -41,18 +41,18 @@ The script will:
 
 Run directly without installing:
 ```bash
-nix run github:yourusername/jj-bump
+nix run github:obayemi/jj-bump
 ```
 
 Install to your profile:
 ```bash
-nix profile install github:yourusername/jj-bump
+nix profile install github:obayemi/jj-bump
 ```
 
 Add to your `flake.nix`:
 ```nix
 {
-  inputs.jj-bump.url = "github:yourusername/jj-bump";
+  inputs.jj-bump.url = "github:obayemi/jj-bump";
   
   # In your packages or home-manager:
   environment.systemPackages = [ inputs.jj-bump.packages.${system}.default ];
@@ -63,7 +63,7 @@ Add to your `flake.nix`:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/jj-bump
+git clone https://github.com/obayemi/jj-bump
 cd jj-bump
 
 # Make the script executable
