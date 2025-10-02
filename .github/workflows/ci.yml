@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+      
+      - name: Run tests
+        run: ./test_jj_bump.sh
+      
+      - name: Check flake
+        run: nix flake check
+      
+      - name: Build package
+        run: nix build
+      
+      - name: Test package
+        run: |
+          ./result/bin/jj-bump 2>&1 | grep -q "Error:" && echo "Package works"
